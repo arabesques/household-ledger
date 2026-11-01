@@ -11,13 +11,15 @@
   const DEMO = !CFG.API_URL;
 
   const DEFAULT_PAYERS = ['牧', '虎'];
-  const DEFAULT_CATEGORIES = ['餐飲食材', 'Sunny', '日常用品', '住宅開銷', '家電傢俱', '其他'];
+  const DEFAULT_CATEGORIES = ['餐飲食材', 'Sunny', '日常用品', '住宅開銷', '出遊娛樂', '家電家具', '其他'];
   const CATEGORY_STYLE = {
     '餐飲食材': { icon: 'food', color: '#4B2717' },
     'Sunny': { icon: 'paw', color: '#D08A06' },
     '日常用品': { icon: 'bag', color: '#6D731C' },
     '住宅開銷': { icon: 'house', color: '#906A4B' },
-    '家電傢俱': { icon: 'tv', color: '#7B4B2A' },
+    '出遊娛樂': { icon: 'suitcase', color: '#A35A3C' },
+    '家電家具': { icon: 'sofa', color: '#7B4B2A' },
+    '家電傢俱': { icon: 'sofa', color: '#7B4B2A' },
     '其他': { icon: 'tag', color: '#B39478' }
   };
   const FALLBACK_CAT_COLORS = ['#8A6A3E', '#5F6A3A', '#A37A55', '#6B4A33'];
@@ -88,6 +90,10 @@
     food: '<path d="M5 11a7 7 0 0 1 14 0v2a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3Z"/><path d="M3 20h18"/>',
     paw: '<circle cx="8" cy="7" r="1.6"/><circle cx="16" cy="7" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/><path d="M12 21c-3 0-5-1.8-5-4.3 0-2 1.6-3 2.4-4.6.6-1.2.9-2.1 2.6-2.1s2 .9 2.6 2.1c.8 1.6 2.4 2.6 2.4 4.6 0 2.5-2 4.3-5 4.3Z"/>',
     bag: '<path d="M4 9h16l-1.4 10.2a1.8 1.8 0 0 1-1.8 1.5H7.2a1.8 1.8 0 0 1-1.8-1.5Z"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/>',
+    suitcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v2"/><path d="M8 7v13M16 7v13"/>',
+    sofa: '<path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><path d="M3 13a2 2 0 0 1 4 0v1h10v-1a2 2 0 0 1 4 0v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z"/><path d="M6 18v2M18 18v2"/>',
+    backspace: '<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m17 9.5-5 5M12 9.5l5 5"/>',
+    chevD: '<path d="m6 9 6 6 6-6"/>',
     tv: '<rect x="4" y="3" width="16" height="12" rx="2"/><path d="M8 19h8M12 15v4"/>',
     tag: '<path d="M20.6 12.4 12.4 20.6a1.7 1.7 0 0 1-2.4 0l-6.6-6.6a1.7 1.7 0 0 1 0-2.4L11.6 3.4A2 2 0 0 1 13 2.8L19 3a1 1 0 0 1 1 1l.2 6a2 2 0 0 1-.6 1.4Z"/><circle cx="15" cy="8" r="1.4"/>',
     pie: '<path d="M12 3v9l7 4"/><circle cx="12" cy="12" r="9"/>',
@@ -286,7 +292,7 @@
         [16, '虎', 'Sunny', '獸醫門診', 1800], [19, '牧', '住宅開銷', '網路費', 999], [22, '虎', '日常用品', '洗碗精', 260],
         [24, '牧', '住宅開銷', '電費', 1700], [26, '虎', '餐飲食材', '家樂福', 2100], [28, '牧', '其他', '停車費', 600]
       ];
-      const extras = { 2: [11, '牧', '家電傢俱', '除濕機', 6990], 3: [17, '虎', '家電傢俱', '電風扇', 1890] };
+      const extras = { 2: [11, '牧', '家電家具', '除濕機', 6990], 3: [17, '虎', '家電家具', '電風扇', 1890] };
       [1, 2, 3, 4].forEach((back) => {
         const ym = addMonths(cur, -back);
         const factor = [1, 0.94, 1.08, 0.97, 1.03][back];
@@ -729,7 +735,7 @@
 
         <section aria-labelledby="cat-title" style="display:flex;flex-direction:column;gap:12px">
           <h2 class="section-title" id="cat-title">${icon('pie')}分類支出</h2>
-          ${sum.total ? `<div class="bars">
+          ${sum.total ? `<div class="panel bars">
             ${catTotals.map((x) => `
               <div class="bar-row ${x.amt ? '' : 'is-zero'}">
                 ${icon(catIcon(x.c))}
@@ -737,12 +743,14 @@
                 <span class="bar-row__track" role="img" aria-label="${esc(x.c)} 占 ${Math.round((x.amt / sum.total) * 100)}%"><span class="bar-row__fill" style="display:block;width:${x.amt ? (x.amt / maxCat) * 100 : 0}%;background:${catColor(x.c, x.i)}"></span></span>
                 <span class="bar-row__val num"><b>${fmt(x.amt)}</b><small>${Math.round((x.amt / sum.total) * 100)}%</small></span>
               </div>`).join('')}
-          </div>` : '<p class="hint">本月還沒有支出，記帳後就會出現分類圖表。</p>'}
+          </div>` : '<div class="panel"><p class="hint">本月還沒有支出，記帳後就會出現分類圖表。</p></div>'}
         </section>
 
-        <section aria-labelledby="list-title" style="display:flex;flex-direction:column;gap:4px">
+        <section aria-labelledby="list-title" style="display:flex;flex-direction:column;gap:12px">
           <h2 class="section-title" id="list-title">${icon('list')}明細 <span class="hint" style="font-weight:600">（${entries.length} 筆・日期近 → 遠）</span></h2>
-          ${entries.length ? `<div class="entries">
+          ${entries.length ? `<div class="panel panel--list">
+          <p class="panel__hint">${icon(settled ? 'lock' : 'pencil', 'icon--s')}${settled ? '已結算月份的明細無法編輯' : '點明細可編輯或刪除'}</p>
+          <div class="entries">
             ${entries.map((e) => {
               const inner = `
                 <span class="entry__date num">${mdLabel(e.date)}</span>
@@ -756,8 +764,8 @@
                 : `<button type="button" class="entry" data-edit="${esc(e.id)}" aria-label="編輯 ${esc(e.name)}，${fmt(e.amount)} 元">${inner}<span class="entry__end">${icon('chevR')}</span></button>`;
             }).join('')}
           </div>
-          <p class="hint" style="text-align:center;padding-top:10px">${settled ? '已結算月份的明細無法編輯' : '點明細可編輯或刪除'}</p>`
-          : `<div class="empty">${icon('inbox')}<strong>這個月還沒有記帳</strong>${!settled && ym <= cur ? '<a class="btn btn--cta btn--sm" href="#/record">' + icon('plus', 'icon--s') + '記一筆</a>' : ''}</div>`}
+          </div>`
+          : `<div class="panel empty">${icon('inbox')}<strong>這個月還沒有記帳</strong>${!settled && ym <= cur ? '<a class="btn btn--cta btn--sm" href="#/record">' + icon('plus', 'icon--s') + '記一筆</a>' : ''}</div>`}
         </section>
       </main>`;
 
@@ -889,7 +897,7 @@
             <label for="f-amount" class="field__label">金額（新台幣元）</label>
             <div class="amount">
               <span class="amount__prefix" aria-hidden="true">NT$</span>
-              <input id="f-amount" class="input" type="text" inputmode="numeric" pattern="[0-9,]*" autocomplete="off" placeholder="0" value="${draft.amount ? fmt(draft.amount) : ''}" enterkeyhint="done">
+              <input id="f-amount" class="input" type="text" inputmode="none" autocomplete="off" placeholder="0" value="${draft.amount ? fmt(draft.amount) : ''}" aria-haspopup="true" aria-controls="keypad">
             </div>
             <p class="field__err" id="err-amount">${icon('xCircle')}<span></span></p>
           </div>
@@ -903,6 +911,15 @@
               <button type="button" class="btn btn--primary btn--lg" data-act="submit">儲存</button>
             </div>`
           : `<button type="button" class="btn btn--primary btn--lg btn--block" data-act="submit">送出</button>`}
+      </div>
+      <div class="keypad" id="keypad" role="group" aria-label="金額數字鍵盤" hidden>
+        <div class="keypad__top"><button type="button" class="keypad__done" data-kp="close">${icon('chevD', 'icon--s')}完成</button></div>
+        <div class="keypad__grid">
+          ${['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((d) => `<button type="button" class="kp-key" data-kp="${d}">${d}</button>`).join('')}
+          <button type="button" class="kp-key kp-key--fn" data-kp="00">00</button>
+          <button type="button" class="kp-key" data-kp="0">0</button>
+          <button type="button" class="kp-key kp-key--fn" data-kp="back" aria-label="刪除一位（長按清除）">${icon('backspace', 'icon--l')}</button>
+        </div>
       </div>`;
 
     const form = $('#entry-form', app);
@@ -960,11 +977,70 @@
     });
     nameEl.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); amountEl.focus(); } });
 
-    amountEl.addEventListener('input', () => {
-      const digits = amountEl.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 6);
+    const setAmountDigits = (raw) => {
+      const digits = String(raw).replace(/\D/g, '').replace(/^0+/, '').slice(0, 6);
       draft.amount = digits ? Number(digits) : null;
       amountEl.value = digits ? fmt(digits) : '';
       setErr('amount', '');
+    };
+    amountEl.addEventListener('input', () => setAmountDigits(amountEl.value));
+
+    // 計算機樣式數字鍵盤：觸控裝置不叫出系統鍵盤，改用頁面內鍵盤
+    const keypad = $('#keypad', app);
+    const touch = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+    if (touch) amountEl.readOnly = true;
+    const openKeypad = () => {
+      if (!keypad.hidden) return;
+      if (document.activeElement && document.activeElement !== amountEl && document.activeElement.blur) document.activeElement.blur();
+      keypad.hidden = false;
+      app.classList.add('kp-open');
+      app.style.setProperty('--kp-h', keypad.offsetHeight + 'px');
+      amountEl.classList.add('is-active');
+      requestAnimationFrame(() => {
+        // 讓金額欄位剛好落在「送出」按鈕上方
+        const box = $('[data-field="amount"]', form).getBoundingClientRect();
+        const bar = $('.bottom-bar', app).getBoundingClientRect();
+        const delta = box.bottom - (bar.top - 8);
+        if (delta > 0 || box.top < 70) window.scrollBy({ top: delta > 0 ? delta : box.top - 70, behavior: 'smooth' });
+      });
+    };
+    const closeKeypad = () => {
+      if (keypad.hidden) return;
+      keypad.hidden = true;
+      app.classList.remove('kp-open');
+      amountEl.classList.remove('is-active');
+    };
+    amountEl.addEventListener('click', openKeypad);
+    amountEl.addEventListener('focus', () => { if (touch) openKeypad(); });
+    document.addEventListener('pointerdown', function outside(ev) {
+      if (!document.body.contains(keypad)) { document.removeEventListener('pointerdown', outside); return; }
+      if (keypad.hidden) return;
+      if (keypad.contains(ev.target) || ev.target === amountEl || ev.target.closest('.bottom-bar')) return;
+      closeKeypad();
+    });
+    const press = (k) => {
+      const cur = draft.amount ? String(draft.amount) : '';
+      if (k === 'close') return closeKeypad();
+      if (k === 'back') return setAmountDigits(cur.slice(0, -1));
+      if (cur.length >= 6) return;
+      setAmountDigits(cur + k);
+    };
+    let holdTimer = null;
+    let held = false;
+    $$('[data-kp]', keypad).forEach((b) => {
+      b.addEventListener('pointerdown', (ev) => {
+        ev.preventDefault();
+        if (b.dataset.kp !== 'back') return;
+        held = false;
+        holdTimer = setTimeout(() => { held = true; setAmountDigits(''); }, 550);
+      });
+      const stopHold = () => { clearTimeout(holdTimer); holdTimer = null; };
+      b.addEventListener('pointerup', stopHold);
+      b.addEventListener('pointerleave', stopHold);
+      b.addEventListener('click', () => {
+        if (b.dataset.kp === 'back' && held) { held = false; return; }
+        press(b.dataset.kp);
+      });
     });
 
     const submit = async () => {
